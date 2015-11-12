@@ -12,8 +12,8 @@ int main(int argc, char *argv[])
 	GraphParser p;
 	Problem_t problem;
 
-	p.parse("test10k.map.txt", problem);
-	//p.parse("test10k-dir.map", problem);
+        //p.parse("test.map", problem);
+	p.parse("test10k-dir.map", problem);
 
 	//inicializace pomocnych promennych
 	int newCost = 0;											// pro vypocitani ceny pres aktualni uzel do jeho sousedu
