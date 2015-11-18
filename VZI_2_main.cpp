@@ -29,7 +29,7 @@ int main(int argc, char *argv[])
 
 	high_resolution_clock::time_point t1 = high_resolution_clock::now();
 
-	p.parse("test10k.map.txt", problem);
+	p.parse("test.map", problem);
 	//p.parse("test10k-dir.map", problem);
 
 	//POMOCNE PROMENNE
