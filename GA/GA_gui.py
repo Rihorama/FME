@@ -68,7 +68,9 @@ class Gui(QtGui.QWidget):
         dim_no1 = QtGui.QLabel()
         dim_no1.setText("1:  ") #string with dimension cnt
         
-        dim_min1 = QtGui.QLineEdit(self) 
+        dim_min1 = QtGui.QLineEdit(self)
+        
+        print dim_min1
         dim_max1 = QtGui.QLineEdit(self)
         
         dim_min_lab1 = QtGui.QLabel()
@@ -170,10 +172,38 @@ class Gui(QtGui.QWidget):
         
         
     def getAttributes(self):
+        global count
         
         attr_dict = {}
         
+        #FITNESS FUNC ID
         attr_dict["fitness"] = self.options.checkedId()
+        
+        #DIMENSION CNT
+        attr_dict["dim_cnt"] = count - 1  #removing last increment
+        
+        #ATTRIBUTES OF DIMENSIONS
+        dim_attr_list = []
+        
+        for i in range(0, count-1):
+            #gets layout with respective dimension
+            box = self.row1_dimension_layout.itemAtPosition(i, 1)
+            
+            #lineEdit with minimum 2nd element of layout
+            minimum = box.itemAt(2).widget().text()
+            minimum = str(minimum)
+
+            #lineEdit with maximum 4rd element of layout
+            maximum = box.itemAt(4) .widget().text()
+            maximum = str(maximum)
+            
+            #TODO: overit, ze je vstup spravny vcetne prazdnosti
+            
+            dim_attr_list.append([minimum,maximum])
+            
+        attr_dict["dim_attr_list"] = dim_attr_list
+        
+        
         
         return attr_dict
         
