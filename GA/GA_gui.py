@@ -2,7 +2,7 @@
 import sys
 from PyQt4 import QtGui, QtCore
 
-count = 2  #first dimension is pre-set, optionals start with number 2
+count = 1  
  
 class Gui(QtGui.QWidget):
     
@@ -62,8 +62,8 @@ class Gui(QtGui.QWidget):
         self.row0_formula_options_layout.addWidget(r3)
 
         #-----------DIMENSION OPTIONS ---------------
-        addButton = QtGui.QPushButton("Add Dimension")
-        addButton.clicked.connect(self.add)
+        add_button = QtGui.QPushButton("Add Dimension")
+        add_button.clicked.connect(self.add)
         
         dim_no1 = QtGui.QLabel()
         dim_no1.setText("1:  ") #string with dimension cnt
@@ -83,10 +83,10 @@ class Gui(QtGui.QWidget):
         
         #------------TEXT FIELDS -----------  
         
-        box1 = QtGui.QLineEdit(self)        
-        box2 = QtGui.QLineEdit(self)
-        box3 = QtGui.QLineEdit(self)
-        box4 = QtGui.QLineEdit(self)
+        self.box1 = QtGui.QLineEdit(self)        
+        self.box2 = QtGui.QLineEdit(self)
+        self.box3 = QtGui.QLineEdit(self)
+        self.box4 = QtGui.QLineEdit(self)
         
         
         lab1 = QtGui.QLabel()
@@ -102,6 +102,11 @@ class Gui(QtGui.QWidget):
         lab4.setText("Bit array length:")
 
         
+        #----------START BUTTON-------------
+        
+        start_button = QtGui.QPushButton("START")
+        start_button.clicked.connect(self.start)
+        
         
         #----------FILLING LAYOUTS --------------
         
@@ -111,7 +116,7 @@ class Gui(QtGui.QWidget):
         row1_dim_options.addWidget(dim_max_lab1)
         row1_dim_options.addWidget(dim_max1)
         
-        self.row1_dimension_layout.addWidget(addButton,0,0)
+        self.row1_dimension_layout.addWidget(add_button,0,0)
         self.row1_dimension_layout.addLayout(row1_dim_options,0,1)
         
         
@@ -121,10 +126,11 @@ class Gui(QtGui.QWidget):
         row2_vbox1.addWidget(lab3)
         row2_vbox1.addWidget(lab4)
         
-        row2_vbox2.addWidget(box1)
-        row2_vbox2.addWidget(box2)
-        row2_vbox2.addWidget(box3)
-        row2_vbox2.addWidget(box4)
+        row2_vbox2.addWidget(self.box1)
+        row2_vbox2.addWidget(self.box2)
+        row2_vbox2.addWidget(self.box3)
+        row2_vbox2.addWidget(self.box4)
+        row2_vbox2.addWidget(start_button)
         
         self.row2_options_layout.addLayout(row2_vbox1)
         self.row2_options_layout.addLayout(row2_vbox2)
@@ -180,14 +186,16 @@ class Gui(QtGui.QWidget):
         attr_dict["fitness"] = self.options.checkedId()
         
         #DIMENSION CNT
-        attr_dict["dim_cnt"] = count - 1  #removing last increment
+        attr_dict["dim_cnt"] = count  #removing last increment
         
         #ATTRIBUTES OF DIMENSIONS
         dim_attr_list = []
         
-        for i in range(0, count-1):
+        for i in range(0, count):
             #gets layout with respective dimension
             box = self.row1_dimension_layout.itemAtPosition(i, 1)
+            
+            print self.row1_dimension_layout.rowCount()
             
             #lineEdit with minimum 2nd element of layout
             minimum = box.itemAt(2).widget().text()
@@ -204,7 +212,26 @@ class Gui(QtGui.QWidget):
         attr_dict["dim_attr_list"] = dim_attr_list
         
         
+        #ITERATION CNT
+        txt = str(self.box1.text())
+        attr_dict["iteration_cnt"] = txt
+        
+        #POPULATION SIZE
+        txt = str(self.box2.text())
+        attr_dict["population_size"] = txt
+        
+        #MUTATION PROBABILITY
+        txt = str(self.box3.text())
+        attr_dict["mutation probability"] = txt
+        
+        #BIT ARRAY LENGTH
+        txt = str(self.box4.text())
+        attr_dict["bit_array_length"] = txt
+
         
         return attr_dict
-        
-        
+    
+    def start(self):
+        attr_dict = self.getAttributes()
+        print attr_dict
+

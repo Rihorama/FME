@@ -9,7 +9,6 @@ def main():
     app = QtGui.QApplication(sys.argv)
     ex = GA_gui.Gui()
     
-    print ex.getAttributes()
     sys.exit(app.exec_())
 
 
