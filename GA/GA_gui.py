@@ -100,6 +100,9 @@ class Gui(QtGui.QWidget):
         
         lab4 = QtGui.QLabel()
         lab4.setText("Bit array length:")
+        
+        lab_empty = QtGui.QLabel()
+        lab_empty.setText(" ")
 
         
         #----------START BUTTON-------------
@@ -125,6 +128,7 @@ class Gui(QtGui.QWidget):
         row2_vbox1.addWidget(lab2)
         row2_vbox1.addWidget(lab3)
         row2_vbox1.addWidget(lab4)
+        row2_vbox1.addWidget(lab_empty)
         
         row2_vbox2.addWidget(self.box1)
         row2_vbox2.addWidget(self.box2)
@@ -180,13 +184,13 @@ class Gui(QtGui.QWidget):
     def getAttributes(self):
         global count
         
-        attr_dict = {}
+        self.attr_dict = {}
         
         #FITNESS FUNC ID
-        attr_dict["fitness"] = self.options.checkedId()
+        self.attr_dict["fitness"] = self.options.checkedId()
         
         #DIMENSION CNT
-        attr_dict["dim_cnt"] = count  #removing last increment
+        self.attr_dict["dim_cnt"] = count  #removing last increment
         
         #ATTRIBUTES OF DIMENSIONS
         dim_attr_list = []
@@ -209,29 +213,125 @@ class Gui(QtGui.QWidget):
             
             dim_attr_list.append([minimum,maximum])
             
-        attr_dict["dim_attr_list"] = dim_attr_list
+        self.attr_dict["dim_attr_list"] = dim_attr_list
         
         
         #ITERATION CNT
         txt = str(self.box1.text())
-        attr_dict["iteration_cnt"] = txt
+        self.attr_dict["iteration_cnt"] = txt
         
         #POPULATION SIZE
         txt = str(self.box2.text())
-        attr_dict["population_size"] = txt
+        self.attr_dict["population_size"] = txt
         
         #MUTATION PROBABILITY
         txt = str(self.box3.text())
-        attr_dict["mutation probability"] = txt
+        self.attr_dict["mutation_probability"] = txt
         
         #BIT ARRAY LENGTH
         txt = str(self.box4.text())
-        attr_dict["bit_array_length"] = txt
-
+        self.attr_dict["bit_array_length"] = txt
         
-        return attr_dict
+    
+    #controls dimension interval values
+    def parseDimensionIntervals(self):
+        
+        dims = self.attr_dict["dim_attr_list"]
+        dims2 = []
+        
+        #i = [string,string]
+        for i in dims:
+            
+            minimum = i[0]
+            maximum = i[1]                        
+            
+            #NO INPUT means we take all chromosom in consideration
+            #if minimum not inserted => 0
+            if minimum == "":
+                minimum = 0
+                
+            #if maximum not inserted => 2^max bit range
+            if maximum == "":
+                maximum = pow(2,self.attr_dict["bit_array_length"])
+            
+            #both must be integer
+            try:
+                minimum = int(minimum)
+                maximum = int(maximum)
+                
+            except ValueError:
+                return False
+            
+            #negative int => 0
+            if minimum < 0:
+                minimum = 0
+                
+            if maximum < 0:
+                maximum = 0
+            
+            if minimum > maximum:
+                return False
+            
+            #replaces with updated values
+            dims2.append([minimum,maximum])
+        
+        #replaces with updated dimension list
+        self.attr_dict["dim_attr_list"] = dims2
+        return True
+        
+          
+    
+    #validates attributes format and edits them to suit GA
+    #false if any of the attributes doesn't meet its criteria
+    def parseAttributes(self):                       
+        
+        #INDIVIDUAL ATTRIBUTES
+        iter_cnt = self.attr_dict["iteration_cnt"]
+        pop_size = self.attr_dict["population_size"]
+        mut_prob = self.attr_dict["mutation_probability"]
+        bin_size = self.attr_dict["bit_array_length"]
+        
+        #conversion to requested data type
+        try:
+            iter_cnt = int(iter_cnt)
+            pop_size = int(pop_size)
+            mut_prob = float(mut_prob)
+            bin_size = int(bin_size)
+            
+        except ValueError:
+            print "conversion"
+            return False
+            
+        #checking bounds
+        if (iter_cnt < 0) \
+                or pop_size < 0 \
+                or mut_prob < 0 or mut_prob > 1 \
+                or bin_size < 0:
+            print "bounds"
+            return False
+        
+        #updating
+        self.attr_dict["iteration_cnt"] = iter_cnt
+        self.attr_dict["population_size"] = pop_size
+        self.attr_dict["mutation_probability"] = mut_prob
+        self.attr_dict["bit_array_length"] = bin_size
+
+            
+        #DIMENSION INTERVALS
+        #checks for validity - edits to proper format
+        return self.parseDimensionIntervals()
+        
+        
     
     def start(self):
-        attr_dict = self.getAttributes()
-        print attr_dict
+        
+        self.getAttributes()
+        
+        print self.attr_dict
+        
+        if not self.parseAttributes():
+            print "boing"
+            return
+        
+        print self.attr_dict
 
