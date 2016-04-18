@@ -1,6 +1,7 @@
 #!/usr/bin/python
 import sys
 from PyQt4 import QtGui, QtCore
+import GA_algorithm
 
 count = 1  
  
@@ -190,10 +191,11 @@ class Gui(QtGui.QWidget):
         self.attr_dict["fitness"] = self.options.checkedId()
         
         #DIMENSION CNT
-        self.attr_dict["dim_cnt"] = count  #removing last increment
+        self.attr_dict["dim_cnt"] = count  
         
         #ATTRIBUTES OF DIMENSIONS
-        dim_attr_list = []
+        minima = []
+        maxima = []
         
         for i in range(0, count):
             #gets layout with respective dimension
@@ -211,9 +213,11 @@ class Gui(QtGui.QWidget):
             
             #TODO: overit, ze je vstup spravny vcetne prazdnosti
             
-            dim_attr_list.append([minimum,maximum])
+            minima.append(minimum)
+            maxima.append(maximum)
             
-        self.attr_dict["dim_attr_list"] = dim_attr_list
+        self.attr_dict["minimum"] = minima
+        self.attr_dict["maximum"] = maxima
         
         
         #ITERATION CNT
@@ -236,14 +240,16 @@ class Gui(QtGui.QWidget):
     #controls dimension interval values
     def parseDimensionIntervals(self):
         
-        dims = self.attr_dict["dim_attr_list"]
-        dims2 = []
+        dim_min = self.attr_dict["minimum"]
+        dim_max = self.attr_dict["maximum"]
+        dim_min2 = []
+        dim_max2 = []
         
         #i = [string,string]
-        for i in dims:
+        for i in range(0,len(dim_min)):
             
-            minimum = i[0]
-            maximum = i[1]                        
+            minimum = dim_min[i]
+            maximum = dim_max[i]                  
             
             #NO INPUT means we take all chromosom in consideration
             #if minimum not inserted => 0
@@ -273,10 +279,12 @@ class Gui(QtGui.QWidget):
                 return False
             
             #replaces with updated values
-            dims2.append([minimum,maximum])
+            dim_min2.append(minimum)
+            dim_max2.append(maximum)
         
         #replaces with updated dimension list
-        self.attr_dict["dim_attr_list"] = dims2
+        self.attr_dict["minimum"] = dim_min2
+        self.attr_dict["maximum"] = dim_max2
         return True
         
           
@@ -327,11 +335,11 @@ class Gui(QtGui.QWidget):
         
         self.getAttributes()
         
-        print self.attr_dict
-        
         if not self.parseAttributes():
             print "boing"
             return
         
         print self.attr_dict
+        
+        self.GA = GA_algorithm.GeneticAlgorithm(self.attr_dict)
 
