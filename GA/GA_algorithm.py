@@ -19,6 +19,7 @@ class GeneticAlgorithm:
         self.initializeGeneration() #list of chromosomes
         
         self.bestList = []
+        self.best = False
         
         self.cut1 = self.bin_len / 3  #cuts in thirds
         self.cut2 = self.cut1 * 2
@@ -41,8 +42,6 @@ class GeneticAlgorithm:
         
         counter = 0
         for c in self.generation:
-            print "CHROMOSOME " + str(counter)
-            c.printBinary()
             counter = counter + 1
             
     
@@ -51,18 +50,15 @@ class GeneticAlgorithm:
     def start(self):     
                 
         for i in range(0,self.iter_cnt):
-            print "ITERATION " + str(i)
         
-            self.evaluation()
-            for i in self.generation:            
-                print i.getFitness()
-            
+            self.evaluation()         
             selected = self.selection()        
             new_gen = self.crossover(selected)            
             self.mutation(new_gen)
             
             
-        print self.bestList
+        #print self.bestList
+        return [self.best,self.bestList]
 
         
         
@@ -78,12 +74,13 @@ class GeneticAlgorithm:
             fitness = GA_functions.getFitness(self.fit_func_no,decimal)
             gene.setFitness(fitness)  #saves fitness in the chromosome
             
-            if best == False:
-                best = fitness
-            elif fitness < best:
+            if best == False or fitness < best:
                 best = fitness
                 
-        self.bestList.append(best)       
+        self.bestList.append(best)
+        
+        if self.best == False or self.best > best:
+            self.best = best
         
     
     

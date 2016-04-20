@@ -2,6 +2,7 @@
 import sys
 from PyQt4 import QtGui, QtCore
 import GA_algorithm
+import pyqtgraph as pg
 
 count = 1  
  
@@ -28,6 +29,8 @@ class Gui(QtGui.QWidget):
                 
         row2_vbox1 = QtGui.QVBoxLayout()        
         row2_vbox2 = QtGui.QVBoxLayout()
+        
+        self.results_layout = QtGui.QHBoxLayout()
         
         self.row2_options_layout = QtGui.QHBoxLayout()
         
@@ -71,7 +74,6 @@ class Gui(QtGui.QWidget):
         
         dim_min1 = QtGui.QLineEdit(self)
         
-        print dim_min1
         dim_max1 = QtGui.QLineEdit(self)
         
         dim_min_lab1 = QtGui.QLabel()
@@ -112,6 +114,11 @@ class Gui(QtGui.QWidget):
         start_button.clicked.connect(self.start)
         
         
+        #----------RESULTS------------------
+        self.final_result = QtGui.QTextEdit(self)
+        self.final_result.setReadOnly(True)
+        
+        
         #----------FILLING LAYOUTS --------------
         
         row1_dim_options.addWidget(dim_no1)
@@ -121,9 +128,9 @@ class Gui(QtGui.QWidget):
         row1_dim_options.addWidget(dim_max1)
         
         self.row1_dimension_layout.addWidget(add_button,0,0)
-        self.row1_dimension_layout.addLayout(row1_dim_options,0,1)
+        self.row1_dimension_layout.addLayout(row1_dim_options,0,1)  
         
-        
+        self.results_layout.addWidget(self.final_result)
                 
         row2_vbox1.addWidget(lab1)
         row2_vbox1.addWidget(lab2)
@@ -143,6 +150,7 @@ class Gui(QtGui.QWidget):
         self.mainLayout.addLayout(self.row0_formula_options_layout)
         self.mainLayout.addLayout(self.row1_dimension_layout)
         self.mainLayout.addLayout(self.row2_options_layout)
+        self.mainLayout.addLayout(self.results_layout)
         
         self.setLayout(self.mainLayout)
  
@@ -200,8 +208,6 @@ class Gui(QtGui.QWidget):
         for i in range(0, count):
             #gets layout with respective dimension
             box = self.row1_dimension_layout.itemAtPosition(i, 1)
-            
-            print self.row1_dimension_layout.rowCount()
             
             #lineEdit with minimum 2nd element of layout
             minimum = box.itemAt(2).widget().text()
@@ -339,8 +345,14 @@ class Gui(QtGui.QWidget):
             print "Attribute failure."
             return
         
-        print self.attr_dict
-        
         self.GA = GA_algorithm.GeneticAlgorithm(self.attr_dict)
-        self.GA.start()
+        data = self.GA.start()
+        pg.plot(data[1])
+        
+
+        string = "Final fitness: " + str(data[1][-1]) + "\nBest fitness: " + str(data[0])
+        
+        self.final_result.setText(string)
+        QApplication.processEvents()
+        
 
