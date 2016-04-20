@@ -318,9 +318,9 @@ class Gui(QtGui.QWidget):
             print "bounds"
             return False
         
-        #updating
+        #updating (population rounded up to even number)
         self.attr_dict["iteration_cnt"] = iter_cnt
-        self.attr_dict["population_size"] = pop_size
+        self.attr_dict["population_size"] = pop_size + (pop_size % 2)
         self.attr_dict["mutation_probability"] = mut_prob
         self.attr_dict["bit_array_length"] = bin_size
 
@@ -336,10 +336,11 @@ class Gui(QtGui.QWidget):
         self.getAttributes()
         
         if not self.parseAttributes():
-            print "boing"
+            print "Attribute failure."
             return
         
         print self.attr_dict
         
         self.GA = GA_algorithm.GeneticAlgorithm(self.attr_dict)
+        self.GA.start()
 

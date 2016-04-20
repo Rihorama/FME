@@ -11,21 +11,19 @@ class Chromosome:
     
     def __init__(self,dim,l,mi,ma):
         
+        self.fitness = False
+        
         #first chromosome sets class variables
-        print "Checking isSet"
-        print Chromosome.isSet
         
         if not Chromosome.isSet:
             Chromosome.dim_cnt = dim
-            print "Dim cnt"
-            print Chromosome.dim_cnt
             Chromosome.length = l
             Chromosome.minimum = mi #list of minima for resp dimensions
             Chromosome.maximum = ma #list of maxima for resp dimensions
             Chromosome.isSet = True
             
-        self.decimal = []
-        self.binary = []
+        self.decimal = []  #list of integers
+        self.binary = []   #list of lists representing binary number
         
         for i in range(0,Chromosome.dim_cnt):
             self.createDimension(i)
@@ -47,22 +45,14 @@ class Chromosome:
         return
     
     
-    #returns gene on given position in given dimension
-    def getGene(self,dim_i,gene_i):
+    #reverses gene value
+    #if it would mean exceeding boundaries, nothing happens
+    def swapGene(self,dim_i,gene_i):
         
-        return self.binary[dim_i][gene_i]
-    
-    
-    
-    #swaps value on given position to new_gene
-    #if the swap exceeds given boundaries, it does not happen
-    #but the original gene value is always returned
-    def swapGene(self,dim_i,gene_i, new_gene):
-        
-        old_gene = self.binary[dim_i][gene_i]
-        
-        if not old_gene == new_gene:        
-            self.changeGene(dim_i,gene_i,new_gene,old_gene)
+        old_gene = self.binary[dim_i][gene_i]        
+        new_gene = (old_gene + 1) % 2
+                
+        self.changeGene(dim_i,gene_i,new_gene,old_gene)
         
         return old_gene
     
@@ -106,10 +96,10 @@ class Chromosome:
     #takes integer, returns list of 0 and 1 representing its binary
     #form
     def makeBinary(self,i):
-        
+
         i = str(bin(i))
         i = i[2:]         #cuts the "0b"
-        
+
         binary = []
         
         for x in reversed(i):
@@ -117,7 +107,7 @@ class Chromosome:
         
         #cuts msb if binary length exceeds limit
         if Chromosome.length < len(binary):
-            return bin[:self.bin_len]
+            return binary[:Chromosome.length]
         
         #else adds zeros to meet the limit
         for x in range(Chromosome.length - len(binary)):
@@ -134,16 +124,71 @@ class Chromosome:
         for i in range(0, len(b)):
             decimal = decimal + b[i]*pow(2,i) 
             
+            
         return decimal
     
     
+    
+    
     def printBinary(self):
-        
-        print range(0,Chromosome.dim_cnt)
         
         for i in range(0,Chromosome.dim_cnt):
             bin_num = bin(self.decimal[i])
             print "  Dimension " + str(i)
             print "    " + str(bin_num)[2:]
+        
+        return
+    
+    
+    #receives and stores given fitness value
+    def setFitness(self,fitness):
+        
+        self.fitness = fitness        
+        return
+    
+    
+    #returns fitness value
+    def getFitness(self):
+        
+        return self.fitness
+    
+    #returns list of decimal values of the chromosome 
+    def getDecimal(self):
+        
+        return self.decimal
+    
+    
+    def getBinary(self):
+        
+        return self.binary
+    
+    
+    #replaces current binary with newly given binary
+    #also updates decimal counterpart
+    #also controls the number being within the range
+    def setBinary(self,binary):
+        
+        new_decimal = []
+        
+        #for that controls each element of binary for bounds
+        for x in range(0,len(binary)):
             
+            temp_decimal = self.makeDecimal(binary[x])
+            
+            #if the decimal is out of range, it becomes the limit
+            #binary must be updated
+            if temp_decimal < self.minimum[x]:
+                temp_decimal = self.minimum[x]
+                binary[x] = self.makeBinary(temp_decimal)
+                
+            elif temp_decimal > self.maximum[x]:
+                temp_decimal = self.maximum[x]
+                binary[x] = self.makeBinary(temp_decimal)
+                
+            new_decimal.append(temp_decimal) #adds to list of decimals
+            
+        self.binary = binary
+        self.decimal = new_decimal
+    
+    
         
