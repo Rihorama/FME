@@ -209,11 +209,11 @@ class Gui(QtGui.QWidget):
             #gets layout with respective dimension
             box = self.row1_dimension_layout.itemAtPosition(i, 1)
             
-            #lineEdit with minimum 2nd element of layout
+            #lineEdit with minimum = 2nd element of layout
             minimum = box.itemAt(2).widget().text()
             minimum = str(minimum)
 
-            #lineEdit with maximum 4rd element of layout
+            #lineEdit with maximum = 4rd element of layout
             maximum = box.itemAt(4) .widget().text()
             maximum = str(maximum)
             
@@ -274,12 +274,6 @@ class Gui(QtGui.QWidget):
             except ValueError:
                 return False
             
-            #negative int => 0
-            if minimum < 0:
-                minimum = 0
-                
-            if maximum < 0:
-                maximum = 0
             
             if minimum > maximum:
                 return False
@@ -349,7 +343,7 @@ class Gui(QtGui.QWidget):
         data = self.GA.start()
         pg.plot(data[1])
         
-
+        print data[1]
         string = "Final fitness: " + str(data[1][-1]) + "\nBest fitness: " + str(data[0])
         
         self.final_result.setText(string)
