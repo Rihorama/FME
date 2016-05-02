@@ -343,10 +343,9 @@ class Gui(QtGui.QWidget):
         data = self.GA.start()
         pg.plot(data[1])
         
-        print data[1]
         string = "Final fitness: " + str(data[1][-1]) + "\nBest fitness: " + str(data[0])
         
         self.final_result.setText(string)
-        QApplication.processEvents()
+        QtGui.QApplication.processEvents()
         
 
