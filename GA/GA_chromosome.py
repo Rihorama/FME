@@ -112,25 +112,18 @@ class Chromosome:
     #takes a positive integer and maps it on given interval
     def mapToInterval(self,number,dim_i):
         
-        #print "toInterval: I get: " + str(number)
-        
         #what particular number does our binary number stand for in the interval
         #we multiply it with the mapping seed for this dimension
         mapped = Chromosome.minimum[dim_i] + (number * Chromosome.mapSeeds[dim_i])
-        
-        #print "toInterval: I map: " + str(mapped)
+
         return mapped
     
     
     #reverse process, mapped float -> positive integer
     def mapToBinRange(self,number,dim_i):
         
-        #print "toBinRange: I get: " + str(number)
-        
         #we get back the positive integer coming from binary range
         demapped = (number - Chromosome.minimum[dim_i]) / Chromosome.mapSeeds[dim_i]
-        
-        #print "toBinRange: I map: " + str(demapped)
         
         return int(demapped)
     

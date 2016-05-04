@@ -23,19 +23,15 @@ class GeneticAlgorithm:
         
         self.cut1 = self.bin_len / 3  #cuts in thirds
         self.cut2 = self.cut1 * 2
-        
-        print "spoustim init"
 
         
     
     
     def initializeGeneration(self):
         
-        print "New generation making"
-        
         generation = []
-        #GA_chromosome.Chromosome.isSet = False #manually resetting flag
-        
+        GA_chromosome.Chromosome.mapSeeds = [] #manually resetting seed list
+
         for i in range(0,self.popul_size):
             chromosome = GA_chromosome.Chromosome(self.dim_cnt, \
                 self.bin_len, self.minimum, self.maximum)
@@ -60,8 +56,6 @@ class GeneticAlgorithm:
             new_gen = self.crossover(selected)            
             self.mutation(new_gen)
             
-        print "\n\nTisknu self best list!\n\n"    
-        print self.bestList
         return [self.best,self.bestList]
 
         
@@ -75,10 +69,9 @@ class GeneticAlgorithm:
                 
         for gene in self.generation:
             decimal = gene.getDecimal()
-            #print "DECIMAL"
-            #print decimal
+
             fitness = GA_functions.getFitness(self.fit_func_no,decimal)
-            #print "FITNESS: " + str(fitness)
+
             gene.setFitness(fitness)  #saves fitness in the chromosome
             
             if best == False or fitness < best:
@@ -88,6 +81,7 @@ class GeneticAlgorithm:
         
         if self.best == False or self.best > best:
             self.best = best
+            
         
     
     

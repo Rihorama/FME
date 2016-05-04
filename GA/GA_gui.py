@@ -171,7 +171,7 @@ class Gui(QtGui.QWidget):
         
         #labels to text fields
         dim_no = QtGui.QLabel()
-        dim_no.setText(str(count) + ":  ") #string with dimension cnt
+        dim_no.setText(str(count+1) + ":  ") #string with dimension cnt
         dim_min_lab = QtGui.QLabel()
         dim_min_lab.setText("Min:")        
         dim_max_lab = QtGui.QLabel()
@@ -264,7 +264,7 @@ class Gui(QtGui.QWidget):
                 
             #if maximum not inserted => 2^max bit range
             if maximum == "":
-                maximum = pow(2,self.attr_dict["bit_array_length"])
+                maximum = pow(2,self.attr_dict["bit_array_length"])                
             
             #both must be integer
             try:
