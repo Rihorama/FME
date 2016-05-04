@@ -23,14 +23,18 @@ class GeneticAlgorithm:
         
         self.cut1 = self.bin_len / 3  #cuts in thirds
         self.cut2 = self.cut1 * 2
+        
+        print "spoustim init"
 
         
     
     
     def initializeGeneration(self):
         
+        print "New generation making"
+        
         generation = []
-        GA_chromosome.Chromosome.isSet = False #manually resetting flag
+        #GA_chromosome.Chromosome.isSet = False #manually resetting flag
         
         for i in range(0,self.popul_size):
             chromosome = GA_chromosome.Chromosome(self.dim_cnt, \
@@ -56,8 +60,8 @@ class GeneticAlgorithm:
             new_gen = self.crossover(selected)            
             self.mutation(new_gen)
             
-            
-        #print self.bestList
+        print "\n\nTisknu self best list!\n\n"    
+        print self.bestList
         return [self.best,self.bestList]
 
         
@@ -71,7 +75,10 @@ class GeneticAlgorithm:
                 
         for gene in self.generation:
             decimal = gene.getDecimal()
+            #print "DECIMAL"
+            #print decimal
             fitness = GA_functions.getFitness(self.fit_func_no,decimal)
+            #print "FITNESS: " + str(fitness)
             gene.setFitness(fitness)  #saves fitness in the chromosome
             
             if best == False or fitness < best:
@@ -97,14 +104,22 @@ class GeneticAlgorithm:
 
         #two random rivals
         for i in range(0,selected_cnt):
-            rival_1 = self.generation[random.randint(0,self.popul_size-1)]
-            rival_2 = self.generation[random.randint(0,self.popul_size-1)]
+            #ran1 = random.randint(0,self.popul_size-1)
+            #ran2 = random.randint(0,self.popul_size-1)
+            
+            ran1 = random.randint(0,len(self.generation)-1)
+            ran2 = random.randint(0,len(self.generation)-1)
+            rival_1 = self.generation[ran1]
+            rival_2 = self.generation[ran2]
+
             
             #we go for minimum
             if rival_1.getFitness() < rival_2.getFitness():
-                selected.append(rival_1)                
+                selected.append(rival_1) 
+                self.generation.pop(ran1)
             else:
                 selected.append(rival_2)
+                self.generation.pop(ran2)
                 
                 
         return selected

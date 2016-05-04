@@ -3,7 +3,10 @@
 import math
 import random
 
-
+first = []
+part = []
+flag = False
+cnt = 0
 
 
 def solveSumOne(x):
@@ -17,8 +20,17 @@ def solveSumTwo(x):
 
 
 def solveSumThree(x):
+    global flag
+    global part
+    
     i = math.sqrt(math.fabs(x))
-    return x * math.sin(i)
+    ret = x * math.sin(i)
+    
+    if not flag:
+        part.append(x)
+        part.append(ret)
+    
+    return ret
 
 
 #---------------------
@@ -39,12 +51,33 @@ def functionTwo(genomList):
 
 
 def functionThree(genomList):
-    constant = 418.2829
+    global first
+    global flag
+    global cnt
+    global part
+    
+    constant = 418.9829
     d = len(genomList)
     x = 0    
     for i in genomList:
-        x = x + solveSumThree(i)    
-    return (d * constant) - x
+        x = x + solveSumThree(i) 
+        
+        
+    
+    ret = (d * constant) - x
+    
+    if not flag:
+        part.append(ret)        
+        cnt = cnt + 1
+        first.append(part)
+        part = []
+        
+        if not cnt < 100:
+            flag = True
+            for i in first:
+                print i
+    
+    return ret
 
 
 

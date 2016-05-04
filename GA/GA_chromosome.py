@@ -7,7 +7,7 @@ class Chromosome:
     length = 0
     maximum = 0
     minimum = 0
-    isSet = False
+    #isSet = False
     mapSeeds = []  #seed for mapping the binary value to the given interval
                    #that is: float(maximum - minimum) / float(pow(2,Chromosome.length))
     
@@ -17,12 +17,12 @@ class Chromosome:
         
         #first chromosome sets class variables
         
-        if not Chromosome.isSet:
-            Chromosome.dim_cnt = dim
-            Chromosome.length = l
-            Chromosome.minimum = mi #list of minima for resp dimensions
-            Chromosome.maximum = ma #list of maxima for resp dimensions
-            Chromosome.isSet = True
+        #if not Chromosome.isSet:
+        Chromosome.dim_cnt = dim
+        Chromosome.length = l
+        Chromosome.minimum = mi #list of minima for resp dimensions
+        Chromosome.maximum = ma #list of maxima for resp dimensions
+        Chromosome.isSet = True
             
         self.decimal = []  #list of integers
         self.binary = []   #list of lists representing binary number
@@ -44,8 +44,12 @@ class Chromosome:
         dim_min = Chromosome.minimum[i]
         dim_max = Chromosome.maximum[i]
         
-        #generates an integer withing the bit array range
+        #generates an integer within the bit array range
         binRangeNum = random.randint(0,pow(2,Chromosome.length))
+        
+        #overflow control
+        if binRangeNum == pow(2,Chromosome.length):
+            binRangeNum = binRangeNum -1
         
         #now maps the number from binary range to the dimension interval
         mapped = self.mapToInterval(binRangeNum,i)

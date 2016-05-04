@@ -338,8 +338,10 @@ class Gui(QtGui.QWidget):
         if not self.parseAttributes():
             print "Attribute failure."
             return
-        
-        self.GA = GA_algorithm.GeneticAlgorithm(self.attr_dict)
+        print "zmacknut start, tvorim GA"
+        new = GA_algorithm.GeneticAlgorithm(self.attr_dict)
+        self.GA = new
+        print "poustim GA"
         data = self.GA.start()
         pg.plot(data[1])
         
