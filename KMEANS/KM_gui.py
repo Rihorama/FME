@@ -347,7 +347,12 @@ class Gui(QtGui.QWidget):
             #means we will be working in 2D
             points_z = []
             self.attr_dict["cords_z"] = [] #removing cluster z coordinates
-            dimension = 2        
+            dimension = 2
+        
+        #in case of k medoids we don't care about medoid input
+        #medoids will be randomly chosen from given points
+        elif self.attr_dict["k_means"] == False:
+            w = "worthless variable"
         
         elif len(points_z) == 0 and len(self.attr_dict["cords_z"]) != 0:
             #we work in 2D while centroids were given a third dimension
