@@ -278,16 +278,16 @@ class Gui(QtGui.QWidget):
             cords = line.split(";")
             
             #appending x
-            x = int(cords[0].replace("\n", ""))
+            x = float(cords[0].replace("\n", ""))
             points_x.append(x) 
             
             #appending y
-            y = int(cords[1].replace("\n", ""))
+            y = float(cords[1].replace("\n", ""))
             points_y.append(y)            
             
             #appending z if given
             if len(cords) == 3:
-                z = int(cords[2].replace("\n", ""))
+                z = float(cords[2].replace("\n", ""))
                 points_z.append(z)
                 
         print points_x
@@ -335,6 +335,7 @@ class Gui(QtGui.QWidget):
             return
         
         KM = KM_kmeans.KMeans(self.attr_dict)
+        KM.start()
         
         
         #if not self.parseAttributes():
