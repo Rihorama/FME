@@ -9,13 +9,15 @@ class KMeans:
     
     range_min = 0
     range_max = 20
-    tolerance = 0.01
+    tolerance = 0.001
     
     def __init__(self,attr_dict):  
         
         self.points_cnt = len(attr_dict["points_x"]) #how many points
         self.cl_cnt = attr_dict["cl_cnt"]           #how many clusters
         self.dim = attr_dict["dim"]                 #dimension
+        self.step_by_step = attr_dict["step_by_step"]
+        self.kmeans = attr_dict["k_means"]
         
         #initial centroid coordinates
         self.cent_x = attr_dict["cords_x"]
@@ -121,6 +123,16 @@ class KMeans:
                 z = random.random() * KMeans.range_max
                 self.cent_z[c] = z
                 
+    #INITIALIZE MEDOIDS IN RANDOM GIVEN POINTS
+    #cnt of medoids = cnt of chosen centroids
+    def randomMedoids(self):
+        
+        #randomly assigns cl_cnt medoids from points_cnt points
+        for i in range(self.cl_cnt):
+            rand = random.randint(0,self.points_cnt-1)
+            self.centroids[i] = self.points[rand]
+            
+                
                 
                 
     ###-------------------------------------
@@ -224,6 +236,52 @@ class KMeans:
         #print "new centroids"
         #print self.centroids
         return changeFlag #false if no change happened
+    
+    
+    #FINDS THE BEST UPDATE FOR EACH MEDOID
+    def medoidUpdate(self):
+        
+        change_flag = False
+        
+        for m in range(self.cl_cnt):
+            min_cost = -1
+            min_index = False
+            
+            #for each point assigned to medoid's cluster
+            for i in range(len(self.cl_points[m])):
+                point_index = self.cl_points[m][i]
+                cost = self.medoidSwap(m,point_index) #computes the cost
+                
+                #updates min_cost if new cost is better
+                if min_cost == -1 or cost < min_cost:
+                    min_cost = cost
+                    min_index = point_index #remembers which point had the best cost
+            
+            #checking for change
+            if (self.centroids[m] != self.points[min_index]).all():
+                #new medoid is now the point with the best cost
+                self.centroids[m] = self.points[min_index]
+                change_flag = True
+            
+        return change_flag
+            
+    
+    #SWAPS GIVEN MEDOID WITH GIVEN POINT
+    #returns the cost of the change
+    def medoidSwap(self,m_index,p_index):
+        
+        total = 0
+        swap_medoid = self.points[p_index]
+        
+        for p in range(len(self.cl_points[m_index])):
+            temp_index = self.cl_points[m_index][p]
+            point = self.points[temp_index]
+            total = total + np.linalg.norm(swap_medoid-point)
+            
+        return total
+        
+        
+            
          
      
      
@@ -293,24 +351,79 @@ class KMeans:
             ax.scatter(x, y, z, color=clrs[c], marker='o')
             ax.scatter(centroid[0], centroid[1], centroid[2],
                        color=clrs[c], marker='*', s = 50)
-        print "I'm here"
+            ax.set_xlabel('X')
+            ax.set_ylabel('Y')
+            ax.set_zlabel('Z')
+        
         plt.show()
      
-             
+    
+    ###-----------------------
+    ###-------METHODS---------
+    ###-----------------------
+    
+    
+    # K-MEANS
+    def kMeans(self):
+        
+        self.findMyCluster() #sorting points in cluster
+            
+        if self.step_by_step: #plotting step by step
+            self.plotPoints()
+        
+        return self.newCentroidPositions()
+        #print self.cl_points
+        
+        
+    # K-MEDOIDS    
+    def kMedoids(self):
+        
+        self.randomMedoids() #preparing medoids
+        self.findMyCluster() #sorting points in cluster
+            
+        if self.step_by_step: #plotting step by step
+            self.plotPoints()
+        
+        return self.medoidUpdate()
+        #print self.cl_points
+    
+    
+    
+    
+    
     ###------------------------
     ###----------START---------
     ###------------------------
     def start(self):
         
         flag = True
-         
+                 
         while(flag):
             
-            self.findMyCluster() #sorting points in cluster
-            self.plotPoints()
+            if self.kmeans == True:          
+                flag = self.kMeans()
+            else:
+                flag = self.kMedoids()
+            #print self.cl_points
             
-            flag = self.newCentroidPositions()
-            print self.cl_points
+        self.plotPoints() #final result
+        
+        #output file
+        try:
+            f = open("./results.csv", 'w')
+            
+        except IOError:
+            print "Problem opening/creating output file."
+            return False
+        
+        for centroid in self.centroids:
+            string = ""
+            for i in range(self.dim):
+                string = string + str(centroid[i]) + ";"
+                
+            string = string[:-1] + "\n"  #cuts the last ; and ads newline
+            f.write(string)
+                
 
         #raw_input("Press Enter to continue...")
         

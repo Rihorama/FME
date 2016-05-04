@@ -32,38 +32,36 @@ class Gui(QtGui.QWidget):
         
         self.row2_file_layout = QtGui.QHBoxLayout()
         
-        self.row3_start_layout = QtGui.QHBoxLayout()
+        self.row3_method_layout = QtGui.QHBoxLayout()
+        
+        self.row4_start_layout = QtGui.QHBoxLayout()
         
         self.mainLayout = QtGui.QVBoxLayout()
        
         
         #------------STEPS OPTIONS----------
         
-        #formula_lab = QtGui.QLabel()
-        #formula_lab.setText("Fitness func.")
+        formula_lab = QtGui.QLabel()
+        formula_lab.setText("Plot options:")
         
-        #self.options=QtGui.QButtonGroup() # Number group
+        self.options=QtGui.QButtonGroup() # Number group
         
-        #r0=QtGui.QRadioButton("1")
-        #r0.setChecked(True)
-        #r1=QtGui.QRadioButton("2")
+        r0=QtGui.QRadioButton("Result")
+        r0.setChecked(True)
+        r1=QtGui.QRadioButton("Step by step")
         #r2=QtGui.QRadioButton("3")
         #r3=QtGui.QRadioButton("4")
         
-        #self.options.addButton(r0)
-        #self.options.setId(r0,1)
-        #self.options.addButton(r1)
-        #self.options.setId(r1,2)
-        #self.options.addButton(r2)
-        #self.options.setId(r2,3)
-        #self.options.addButton(r3)
-        #self.options.setId(r3,4)
+        self.options.addButton(r0)
+        self.options.setId(r0,1)
+        self.options.addButton(r1)
+        self.options.setId(r1,2)
+
         
-        #self.row0_formula_options_layout.addWidget(formula_lab)
-        #self.row0_formula_options_layout.addWidget(r0)
-        #self.row0_formula_options_layout.addWidget(r1)
-        #self.row0_formula_options_layout.addWidget(r2)
-        #self.row0_formula_options_layout.addWidget(r3)
+        self.row0_formula_options_layout.addWidget(formula_lab)
+        self.row0_formula_options_layout.addWidget(r0)
+        self.row0_formula_options_layout.addWidget(r1)
+
 
         #-----------CLUSTER OPTIONS ---------------
         add_button = QtGui.QPushButton("Add Cluster")
@@ -100,6 +98,27 @@ class Gui(QtGui.QWidget):
         
         lab_empty = QtGui.QLabel()
         lab_empty.setText(" ")
+        
+        
+        #----------MEANS vs MEDOIDS ----------
+        
+        means_lab = QtGui.QLabel()
+        means_lab.setText("Pick method:")
+        
+        self.means_options=QtGui.QButtonGroup() # method group
+        
+        m0=QtGui.QRadioButton("K-means")
+        m0.setChecked(True)
+        m1=QtGui.QRadioButton("K-medoids")
+        #r2=QtGui.QRadioButton("3")
+        #r3=QtGui.QRadioButton("4")
+        
+        self.means_options.addButton(m0)
+        self.means_options.setId(m0,1)
+        self.means_options.addButton(m1)
+        self.means_options.setId(m1,2)
+        
+        
 
         
         #----------START BUTTON-------------
@@ -140,14 +159,19 @@ class Gui(QtGui.QWidget):
         self.row2_file_layout.addWidget(file_button)
         self.row2_file_layout.addWidget(self.file_box)
         
-        self.row3_start_layout.addWidget(lab_empty)
-        self.row3_start_layout.addWidget(start_button)
+        self.row3_method_layout.addWidget(means_lab)
+        self.row3_method_layout.addWidget(m0)
+        self.row3_method_layout.addWidget(m1)
+        
+        self.row4_start_layout.addWidget(lab_empty)
+        self.row4_start_layout.addWidget(start_button)
         
         
         self.mainLayout.addLayout(self.row0_formula_options_layout)
         self.mainLayout.addLayout(self.row1_cluster_layout)
         self.mainLayout.addLayout(self.row2_file_layout)
-        self.mainLayout.addLayout(self.row3_start_layout)
+        self.mainLayout.addLayout(self.row3_method_layout)
+        self.mainLayout.addLayout(self.row4_start_layout)
         
         self.setLayout(self.mainLayout)
  
@@ -210,6 +234,21 @@ class Gui(QtGui.QWidget):
         empty = False
         
         self.attr_dict = {}
+        
+        
+        #PLOT OPTIONS
+        if self.options.checkedId() == 1: #only result will be plotted
+            self.attr_dict["step_by_step"] = False
+        else:
+            self.attr_dict["step_by_step"] = True
+            
+            
+        #METHOD OPTIONS
+        if self.means_options.checkedId() == 1: #only result will be plotted
+            self.attr_dict["k_means"] = True
+        else:
+            self.attr_dict["k_means"] = False
+            
         
         #CLUSTERS
         cord_x = []
@@ -290,11 +329,12 @@ class Gui(QtGui.QWidget):
                 z = float(cords[2].replace("\n", ""))
                 points_z.append(z)
                 
-        print points_x
-        print points_y
-        print points_z
+        #print points_x
+        #print points_y
+        #print points_z
         
         dimension = 3  #default
+        
         
         
         #all x and y cords must be given
@@ -310,9 +350,16 @@ class Gui(QtGui.QWidget):
             dimension = 2        
         
         elif len(points_z) == 0 and len(self.attr_dict["cords_z"]) != 0:
-            #we work in 2D while clusters were given a third dimension
+            #we work in 2D while centroids were given a third dimension
             #we remove the third dimension from cluster points
             self.attr_dict["cords_z"] = [] #removing cluster z coordinates
+            dimension = 2
+            
+        elif len(self.attr_dict["cords_z"]) == 2 and len(points_z) != 0:
+            #opposite case - centroids given in 2D, points in 3D
+            #we cut it to 2D
+            points_z = []
+            dimension = 2
             
             
             
@@ -329,7 +376,7 @@ class Gui(QtGui.QWidget):
     def start(self):
         
         self.getAttributes()
-        print self.attr_dict
+        #print self.attr_dict
         
         if not self.checkAttributes():
             return
